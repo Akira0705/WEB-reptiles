@@ -1,0 +1,6 @@
+{
+    "name": "egg-flash",
+    "eggPlugin": {
+      "name": "flash"
+    }
+  }

@@ -1,0 +1,95 @@
+{% extends '../../layout/admin.html' %} {% block style %}
+<style>
+    .form-group {
+        margin-bottom: 40px;
+    }
+
+    .form-group .btn {
+        margin-right: 20px;
+        outline: none;
+        padding: 6px 35px;
+    }
+</style>
+{% endblock %} {% block script %}
+<script src="https://cdn.bootcss.com/fetch/2.0.3/fetch.min.js"></script>
+<script src="/public/monaco-editor/min/vs/loader.js"></script>
+<script>
+    require.config({ paths: {'vs': '/public/monaco-editor/min/vs' }});
+    require(['vs/editor/editor.main'], () => {
+        const csrf = '{{ ctx.csrf }}';
+        const query = (selector) => document.querySelector(selector);
+        const editor = monaco.editor.create(query('#Code'), {
+            value: [
+                'function x() {',
+                '\tconsole.log("Hello world!");',
+                '};',
+                'x();',
+            ].join('\n'),
+            language: 'javascript',
+            lineHeight: 24,
+            fontSize: 20
+        });
+
+        const createBtn = query('#create');
+
+        const json = res => res.json()
+
+        const handle = result => {
+            if (result.type == 'error') {
+                $alert('error', "失败了", result.msg);
+                return;
+            }
+
+            $alert('success', "成功", "提交成功, 2 秒后自动跳转。")
+
+            setTimeout(() => {
+                const url = window.location.href.split('/');
+                url.pop();
+                window.location.href = url.join('/') + '/list';
+            }, 2000)
+        }
+        createBtn.onclick = () => {
+            const code = editor.getValue();
+            const name = query('#InputTaskName').value;
+            // const data = new FormData();
+            const headers = new Headers();
+            headers.set('x-csrf-token', csrf);
+            headers.set('Content-Type', 'application/json');
+            // data.set('name', name);
+            // data.set('code', code);
+            const body = JSON.stringify({
+                name,
+                code,
+            });
+            // https://github.com/github/fetch
+            fetch(window.location.href, {
+                method: 'POST',
+                body,
+                headers,
+                credentials: 'same-origin',
+            }).then(json).then(handle).catch(console.error)
+        };
+    });
+</script>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h4 style="margin: 40px 0;">创建一个任务执行规则</h4>
+    <form method="post">
+        <div class="form-group">
+            <label for="InputTaskName">任务名称</label>
+            <input type="text" class="form-control" id="InputTaskName" placeholder="输入任务名称" value="123">
+        </div>
+        <div class="form-group">
+            <label for="Code">执行代码</label>
+            <div id="Code" style="min-height: 400px;border: 1px solid hsla(0,0%,39%,.4)"></div>
+        </div>
+        <div class="form-group clearfix">
+            <a href="javascript: void(0);" class="btn btn-primary float-right" id="create">创建</a>
+            <a href="javascript: window.history.go(-1);" class="btn btn-secondary float-right">返回</a>
+        </div>
+    </form>
+</div>
+
+{% include '../../components/alert.html' %} 
+{% endblock %}

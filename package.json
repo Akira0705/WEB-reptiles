@@ -1,0 +1,51 @@
+{
+  "name": "webreptile",
+  "version": "1.0.0",
+  "description": "webreptile",
+  "private": true,
+  "egg": {
+    "typescript": true
+  },
+  "scripts": {
+    "start": "egg-scripts start",
+    "dev": "egg-bin dev -r egg-ts-helper/register",
+    "debug": "egg-bin debug -r egg-ts-helper/register",
+    "test-local": "egg-bin test -r egg-ts-helper/register",
+    "test": "npm run lint -- --fix && npm run test-local",
+    "cov": "egg-bin cov -r egg-ts-helper/register",
+    "tsc": "ets && tsc -p tsconfig.json",
+    "tsc:w": "tsc -p tsconfig.json -w",
+    "ci": "npm run lint && npm run cov && npm run tsc",
+    "autod": "autod",
+    "lint": "tslint .",
+    "clean": "ets clean"
+  },
+  "dependencies": {
+    "@types/sequelize": "^4.27.23",
+    "egg": "^2.9.1",
+    "egg-scripts": "^2.6.0",
+    "egg-sequelize": "^3.1.4",
+    "egg-view-nunjucks": "^2.2.0",
+    "iconv-lite": "^0.4.23",
+    "moment": "^2.22.2",
+    "mysql2": "^1.5.3"
+  },
+  "devDependencies": {
+    "@types/cheerio": "^0.22.7",
+    "@types/mocha": "^5.2.3",
+    "@types/node": "^10.3.4",
+    "@types/supertest": "^2.0.4",
+    "autod": "^3.0.1",
+    "autod-egg": "^1.1.0",
+    "cheerio": "^1.0.0-rc.2",
+    "egg-bin": "^4.7.0",
+    "egg-mock": "^3.17.2",
+    "egg-ts-helper": "^1.9.0",
+    "tslib": "^1.9.3",
+    "tslint": "^5.10.0",
+    "typescript": "^2.9.2"
+  },
+  "engines": {
+    "node": ">=8.9.0"
+  }
+}

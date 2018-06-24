@@ -1,0 +1,194 @@
+{% extends '../../layout/admin.html' %} 
+{% block style %}
+<link href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/rainbow.min.css" rel="stylesheet">
+<style>
+    .item>a {
+        display: block;
+        color: #464a4e;
+        line-height: 40px;
+        background: #f7f7f7;
+        padding: 0 5px;
+        margin: 10px 0;
+    }
+
+    pre {
+        margin-top: 10px;
+    }
+
+    li {
+        margin-bottom: 10px;
+    }
+
+    li a {
+        color: #464a4e;
+    }
+
+    span.error {
+        color: red;
+    }
+
+    span.queue {
+        color: #007bff;
+    }
+
+    span.wating {
+        color: yellow;
+    }
+
+    span.success {
+        color: green;
+    }
+
+    .float-right form {
+        display: inline-block;
+    }
+
+    .item>.error,
+    .filter li a.error {
+        background: #f9c9c9;
+    }
+
+    .item>.success,
+    .filter li a.success {
+        background: #baeab9;
+    }
+
+    .item>.wating,
+    .filter li a.wating {
+        background: #f5e2aa;
+    }
+
+    .item>.queue,
+    .filter li a.queue {
+        background: #23bcd4;
+    }
+
+    .filter {
+        margin: 0;
+        padding: 0;
+    }
+
+    .filter li {
+        display: inline-block;
+    }
+
+    .filter li a {
+        display: inline-block;
+        padding: 6px 15px;
+        background: #ececec;
+        color: #333;
+    }
+</style>
+{% endblock %} 
+{% block script %}
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/languages/typescript.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/languages/bash.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+    const csrf = '{{ ctx.csrf }}';
+
+    const json = res => res.json()
+
+    const handle = result => {
+        if (result.type == 'error') {
+            $alert('error', "失败了", result.msg);
+            return;
+        }
+
+        $alert('success', "成功", "操作成功。")
+    }
+
+    const stop = () => {
+        const headers = new Headers();
+        headers.set('x-csrf-token', csrf);
+        headers.set('Content-Type', 'application/json');
+        // data.set('name', name);
+        // data.set('code', code);
+        fetch('./qstop', {
+            method: 'get',
+            headers,
+            credentials: 'same-origin'
+        }).then(json).then(handle).catch(console.error)
+    };
+
+    const run = () => {
+        console.log("start");
+        const headers = new Headers();
+        headers.set('x-csrf-token', csrf);
+        headers.set('Content-Type', 'application/json');
+        // data.set('name', name);
+        // data.set('code', code);
+        fetch('./qrun', {
+            method: 'get',
+            headers,
+            credentials: 'same-origin'
+        }).then(json).then(handle).catch(console.error)
+    };
+</script>
+{% endblock %} {% block content %}
+<div class="container">
+    <h4 style="margin: 40px 0;">所有 URL 列表
+        <a href="./url/new" class="btn btn-light float-right">创建新 URL</a>
+    </h4>
+    <ul>
+        <li>
+            <a href="javascript: void(0);" onclick="run()">执行所有任务</a>
+        </li>
+        <li>
+            <a href="javascript: void(0);" onclick="stop()">停止所有任务</a>
+        </li>
+    </ul>
+    <ul class="filter">
+        <li>
+            <a href=".">all</a>
+        </li>
+        <li>
+            <a class="success" href="?q=success">success</a>
+        </li>
+        <li>
+            <a class="error" href="?q=error">error</a>
+        </li>
+        <li>
+            <a class="queue" href="?q=queue">queue</a>
+        </li>
+        <li>
+            <a class="wating" href="?q=wating">wating</a>
+        </li>
+    </ul>
+
+    <div id="action" data-children=".item">
+        {% for url in urls %}
+        <div class="item">
+            <a class=" {{ " error " if url.error_message != '' else " " }} {{ url.status }}" data-toggle="collapse" data-parent="#action"
+                href="#action-{{ url.id }}" aria-expanded="true" aria-controls="action-{{ url.id }}">
+                {{ url.url }}
+            </a>
+            <div id="action-{{ url.id }}" class="collapse clearfix" role="tabpanel">
+                <ul>
+                    <li>爬取规则：
+                        <a href="./task/{{ url.task_id }}/edit">{{ url.task.name }}</a>
+                    </li>
+                    <li>状态：
+                        <span class="{{ url.status }}">{{ url.status }}</span>
+                    </li>
+                    {% if url.error_message != '' %}
+                    <li class="error">错误消息：
+                        <pre><code class="bash">{{ url.error_message }}</code></pre>
+                    </li>
+                    {% endif %}
+                </ul>
+                <div class="float-right">
+                    <form action="./{{ url.id }}" method="post">
+                        <input type="hidden" name="_method" value="delete" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">删除</button>
+                    </form>
+                    <a href="./url/{{ url.id }}/edit" class="btn btn-sm btn-outline-secondary">修改</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% include '../../components/alert.html' %} 
+{% endblock %}

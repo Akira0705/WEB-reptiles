@@ -1,0 +1,40 @@
+{% extends '../../layout/admin.html' %}
+
+{% block style %}
+    <style>
+        .form-group a, 
+        .form-group button{
+            padding: 6px 30px;
+        }
+    </style>
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h4 style="margin: 40px 0;">修改爬取 URL</h4>
+        <form method="post" action="../{{ url.id }}">
+              <input type="hidden" name="_method" value="put">
+              <div class="form-group">
+                <label for="InputTaskName">URL 地址</label>
+                <input type="text" class="form-control" id="InputTaskName" name="url" placeholder="输入 URL" value="{{ url.url }}">
+              </div>
+                <div class="form-group">
+                  <label for="Task">选择执行 Task 规则</label>
+                  <select class="custom-select form-control" name="task_id" id="Task">
+                        {% for task in tasks %}
+                        <option value="{{ task.id }}" {{ "selected" if url.task_id == task.id else "" }} >{{ task.name }}</option>
+                        {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group clearfix">
+                    <button type="submit" class="btn btn-primary float-right" id="create" style="margin-left:20px;">保存</button>
+                    <a href=".." class="btn btn-secondary float-right">返回</a>
+                </div>
+        </form>
+    </div>
+
+{% endblock %}

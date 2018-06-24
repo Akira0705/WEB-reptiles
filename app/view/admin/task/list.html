@@ -1,0 +1,77 @@
+{% extends '../../layout/admin.html' %} {% block style %}
+<link href="https://cdn.bootcss.com/highlight.js/9.12.0/styles/rainbow.min.css" rel="stylesheet">
+<style>
+    .item>a {
+        display: block;
+        color: #464a4e;
+        line-height: 40px;
+        background: #f7f7f7;
+        padding: 0 5px;
+        margin: 10px 0;
+    }
+</style>
+{% endblock %} {% block script %}
+<script src="https://cdn.bootcss.com/fetch/2.0.3/fetch.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/languages/typescript.min.js"></script>
+<script>
+    hljs.initHighlightingOnLoad();
+    const csrf = '{{ ctx.csrf }}';
+    const query = (selector) => document.querySelector(selector);
+
+    const json = res => res.json()
+
+    const handle = result => {
+        if (result.type == 'error') {
+            $alert('error', "失败了", result.msg);
+            return;
+        }
+
+        $alert('success', "成功", "提交成功, 2 秒后自动刷新。")
+
+        setTimeout(() => {
+            window.location.reload()
+        }, 2000)
+    }
+    const del = (id) => {
+        // const data = new FormData();
+        const headers = new Headers();
+        headers.set('x-csrf-token', csrf);
+        headers.set('Content-Type', 'application/json');
+        // data.set('name', name);
+        // data.set('code', code);
+        const body = JSON.stringify({
+            _method: 'delete'
+        });
+        fetch('./' + id, {
+            method: 'POST',
+            body,
+            headers,
+            credentials: 'same-origin'
+        }).then(json).then(handle).catch(console.error)
+    };
+</script>
+{% endblock %} {% block content %}
+<div class="container">
+    <h4 style="margin: 40px 0;">所有任务列表
+        <a href="create" class="btn btn-light float-right">创建新任务</a>
+    </h4>
+    <div id="action" data-children=".item">
+        {% for task in tasks %}
+        <div class="item">
+            <a data-toggle="collapse" data-parent="#action" href="#action-{{ task.id }}" aria-expanded="true" aria-controls="action-{{ task.id }}">
+                {{ task.name }}
+            </a>
+            <div id="action-{{ task.id }}" class="collapse clearfix" role="tabpanel">
+                <pre class="mb-3"><code class="typescript">{{ task.code }}</code></pre>
+                <div class="float-right">
+                    <a href="javascript:void(0);" onclick="del({{ task.id }})" class="btn btn-sm btn-outline-danger" style="margin-right: 20px;">删除</a>
+                    <a href="./{{ task.id }}/edit" class="btn btn-sm btn-outline-secondary">修改</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% include '../../components/alert.html' %} {% endblock %}

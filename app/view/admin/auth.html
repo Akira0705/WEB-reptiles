@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>用户登录</title>
+
+  <link rel="stylesheet" href="/public/styles/vendor-dddc8eebb5.css">
+  <link rel="stylesheet" href="/public/styles/auth-b3459e9183.css">
+</head>
+<body>
+
+{% if ctx.flash.type %}
+<style>
+  .alter-center{
+    position: fixed;
+    top: 20px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .alter-center button.close{
+    line-height: 0.8;
+    padding-left: 15px;
+    outline: none;
+  }
+  .bg-error{
+    background-color: #f2dede;
+  }
+</style>
+
+<div class="container alter-center">
+  <div class="alert bg-{{ ctx.flash.type }} closeable" role="alert"><button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong>{{ ctx.flash.title }}</strong> <span>{{ ctx.flash.message }}</span>
+  </div>
+</div>
+
+<script>
+  const btn = document.querySelector('.alter-center button.close')
+  const alterCenter = document.querySelector('.alter-center');
+  btn.addEventListener('click', () => {
+    alterCenter.innerHTML = '';
+  }, false)
+</script>
+{% endif %}
+
+<main class="auth-main">
+
+  <div class="auth-block">
+    <h1>后台登陆</h1>
+    <form class="form-horizontal" method="post">
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-2 control-label">用户名</label>
+
+        <div class="col-sm-10">
+          <input type="text" class="form-control" name="username" id="inputEmail3" placeholder="用户名" value="akira">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label">密码</label>
+
+        <div class="col-sm-10">
+          <input type="password" class="form-control" name="password" id="inputPassword3" placeholder="密码" value="123456">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default btn-auth">登陆</button>
+          <a href class="forgot-pass">Forgot password?</a>
+        </div>
+      </div>
+    </form>
+
+    <div class="auth-sep"><span><span>or Sign in with one click</span></span></div>
+
+    <div class="al-share-auth">
+      <ul class="al-share clearfix">
+        <li><i class="socicon socicon-facebook" title="Share on Facebook"></i></li>
+        <li><i class="socicon socicon-twitter" title="Share on Twitter"></i></li>
+        <li><i class="socicon socicon-google" title="Share on Google Plus"></i></li>
+      </ul>
+    </div>
+  </div>
+</main>
+</body>
+</html>

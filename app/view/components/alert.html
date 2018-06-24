@@ -1,0 +1,102 @@
+<div id="mask">
+    <div id="box" class="msg-box">
+        <header>错误</header>
+        <div class="content">
+
+        </div>
+        <a href="javascript:void(0);" class="btn ok">确认</a>
+    </div>
+</div>
+
+<style>
+    #mask {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all .5s;
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    #mask.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .msg-box {
+        width: 500px;
+        background: #fff;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .msg-box .content {
+        padding: 20px;
+    }
+
+    .msg-box .ok {
+        padding: 5px 25px;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+
+    .msg-box header {
+        font-size: 30px;
+        font-weight: 100;
+        letter-spacing: 10px;
+        padding: 20px;
+        color: #fff;
+        background: #818182;
+        border-top-right-radius: 9px;
+        border-top-left-radius: 9px;
+    }
+
+    .error header,
+    .error .ok {
+        background: #ea727d;
+    }
+
+    .info header,
+    .info .ok {
+        background: #007bff;
+    }
+
+    .success header,
+    .success .ok {
+        background: #4e9e60;
+    }
+
+    .warning header,
+    .warning .ok {
+        background: #bda251;
+    }
+</style>
+
+<script>
+    window.query = (s) => document.querySelector(s);
+
+    const mask = query('#mask');
+    const box = query('#box');
+    const header = query('#box header');
+    const content = query('#box .content');
+
+    window.$alert = (type, title, msg) => {
+        mask.clasList = '';
+        mask.classList.add(type)
+        mask.classList.add('show')
+
+        header.innerText = title;
+        content.innerText = msg;
+    }
+
+    const closeBtn = query('#mask .ok')
+    window.$alertClose = closeBtn.onclick = () => {
+        mask.classList.value = '';
+    }
+</script>
